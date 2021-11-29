@@ -1,0 +1,13 @@
+Hello, I'm HSEDUCK, simple bot for play on stocks\.
+
+* You can play /ping - pong
+* Or ask me /about $SYMBOL
+* You can start/restart game using /reset <start capital>USD
+* Also you can /buy $SYMBOL on <some>USD
+* Or even /sell $SYMBOL this way.
+* You can /close position $SIMBOL
+* Check open postions, using /open
+* Check your cash, using /money
+* /short $SYMBOL <some sum>USD
+* Check your /shorts
+* Use /closeshort to close short  
