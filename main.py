@@ -1,15 +1,19 @@
 import telebot
+import os 
 import parse
 
 from user_info import UserInfo
 from stocking_info import StockingFetcher
 
-bot_token = input("Please input bot token:")
-db_user = input("database user:")
-db_password = input("database password:") 
+try:
+    with open("bot.cfg") as f:
+        bot_token = list(f.readline().split())[0]
+except:
+    bot_token = os.environ.get("bot_token")
 
+print()
 
-userdb = UserInfo(user = db_user, password=db_password)
+userdb = UserInfo()
 stocking_fetcher = StockingFetcher()
 
 with open("help.info", "r") as hlp_source:
@@ -32,7 +36,7 @@ def send_ping(message):
 def send_start_message(message):
     bot.reply_to(message, f"Nice to see you, @{message.from_user.username}")
     if not userdb.user(message.from_user.id).exists:
-        userdb.create_user(message.from_user.id)
+        userdb.create_user(message.from_user.id, message.from_user.username)
         bot.reply_to(message, "First time? amybe you need /help?")
     else:
         bot.reply_to(message, "Welcome back")
@@ -172,12 +176,12 @@ def reset(message):
         bot.reply_to(message, "Please log in using /start")
     else:
         money = parse.parse_sum(message.text)
-        if money is not None:
+        if money is not None and money <= 1000:
             user.reset(new_sum=money)
         else:
             bot.reply_to(
                 message,
-                "Please follow template '/reset 0.00USD'. You may add extra symbols.",
+                "Please follow template '/reset 0.00USD'. (Less than 1000 USD) You may add extra symbols.",
             )
 
 
@@ -217,6 +221,17 @@ def send_shorts(message):
                 message,
                 answer  
             )
+
+@bot.message_handler(commands=["table"])
+def send_start_message(message):
+    contest = userdb.everybody()
+    answer = "your position is marked with (!)\n"
+    for pos, user in enumerate(contest):
+        answer += f"{'(!)' if user.info[0] == message.from_user.id else ''}{pos + 1})  {user.username()} - {round(user.contest_money(), 2)}$\n"
+    bot.reply_to(message, answer)
+
+
+
 
 @bot.message_handler(func=lambda m: True)
 def send_unknown_message(message):

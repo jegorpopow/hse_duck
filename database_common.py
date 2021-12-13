@@ -1,14 +1,13 @@
 import psycopg
 
 class Connection(object):
-    def __init__(self, dbname, user="postgres", password=None):
-        self.name = dbname
-       #print(f"dbname={dbname} user={user} " + f"password={password}" if password else "")
+    def __init__(self, line):
+        self.name = line
         try:
-            self.connection = psycopg.connect(f"dbname={dbname} user={user} " + f"password={password}" if password else "")
-            print(f"Connceted with {dbname} database")
+            self.connection = psycopg.connect(line)
+            print(f"Connceted with {self.name} database")
         except:
-            print(f"Connection with database {dbname} failed...")
+            print(f"Connection with database {self.name} !!!! failed...")
             self.connection = None
     def execute(self, query):
         if self.connection:
